@@ -104,3 +104,37 @@ table {
     border-collapse: collapse;
     border-spacing: 0;
 }
+
+.w_70 {
+    width: 70px;
+}
+
+.flex_lr {
+    display: flex;
+    flex-direction: row;
+}
+
+.font {
+    font-family: 'Courier New', Courier, monospace;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.flex_left {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    display: -webkit-flex;
+    -webkit-flex-direction: row;
+    -webkit-justify-content: space-between;
+    -webkit-align-items: center;
+}
+
+.flex_center {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+    align-items: center;
+}
