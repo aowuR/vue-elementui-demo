@@ -42,8 +42,8 @@
                         <el-col :span="15">
                             <el-input v-model.number="ruleForm.code"></el-input>
                         </el-col>
-                        <el-col :span="9">
-                            <el-button type="success" class="block" @click="getCode">获取验证码</el-button>
+                        <el-col :span="9" @click="getCode">
+                            <el-button type="success" class="block">获取验证码</el-button>
                         </el-col>
                     </el-row>
                 </el-form-item>
@@ -60,10 +60,11 @@
 </template>
 
 <script>
-import { getSms } from "../../api/login";
+import { reactive, ref, onMounted } from "@vue/composition-api";
 export default {
-    data() {
-        var validateEmail = (rule, value, callback) => {
+    setup(props, context) {
+        //data 数据 生命周期 自定义函数
+        let validateEmail = (rule, value, callback) => {
             let emailReg = /^([A-Za-z0-9_\-\.])+\@([A-Za-z0-9_\-\.])+\.([A-Za-z]{2,4})$/;
             if (value === "") {
                 callback(new Error("请输入邮箱"));
@@ -73,18 +74,18 @@ export default {
                 callback();
             }
         };
-        var validatePass = (rule, value, callback) => {
+        let validatePass = (rule, value, callback) => {
             if (value === "") {
                 callback(new Error("请输入密码"));
             } else {
                 callback();
             }
         };
-        var validatePassword = (rule, value, callback) => {
-            console.log(this.ruleForm.pass);
+        let validatePassword = (rule, value, callback) => {
+            console.log(ruleForm.pass);
             if (value === "") {
                 callback(new Error("请输入密码"));
-            } else if (this.ruleForm.pass != value) {
+            } else if (ruleForm.pass != value) {
                 callback(new Error("两次输入密码不一致"));
             } else {
                 callback();
@@ -98,31 +99,42 @@ export default {
             }
         };
 
-        return {
-            tabName: "login",
-            ruleForm: {
-                email: "",
-                pass: "",
-                password: "",
-                code: ""
-            },
-            rules: {
-                email: [{ validator: validateEmail, trigger: "blur" }],
-                pass: [{ validator: validatePass, trigger: "blur" }],
-                password: [{ validator: validatePassword, trigger: "blur" }],
-                code: [{ validator: validateCode, trigger: "blur" }]
-            },
-            btnText: "登录"
+        /**
+         * data 数据
+         */
+
+        const tabName = ref("login");
+        const btnText = ref("登录");
+
+        const ruleForm = reactive({
+            email: "",
+            pass: "",
+            password: "",
+            code: ""
+        });
+        const rules = reactive({
+            email: [{ validator: validateEmail, trigger: "blur" }],
+            pass: [{ validator: validatePass, trigger: "blur" }],
+            password: [{ validator: validatePassword, trigger: "blur" }],
+            code: [{ validator: validateCode, trigger: "blur" }]
+        });
+        /**
+         * 生命周期
+         */
+
+        onMounted(() => {});
+
+        /**
+         * 自定义函数
+         */
+        const tabClick = txt => {
+            tabName.value = txt;
+            btnText.value = txt == "login" ? "登录" : "注册";
+            context.refs["ruleForm"].resetFields(); //重置表单
         };
-    },
-    methods: {
-        tabClick(txt) {
-            this.tabName = txt;
-            this.btnText = txt == "login" ? "登录" : "注册";
-            this.$refs["ruleForm"].resetFields(); //重置表单
-        },
-        submitForm(formName) {
-            this.$refs[formName].validate(valid => {
+
+        const submitForm = formName => {
+            context.refs[formName].validate(valid => {
                 if (valid) {
                     alert("submit!");
                 } else {
@@ -130,10 +142,23 @@ export default {
                     return false;
                 }
             });
-        },
-        getCode() {
-            getSms({ username: this.ruleForm.code });
-        }
+        };
+
+        const getCode = () => {};
+
+        /**
+         * return 出需要用到的数据和方法
+         */
+
+        return {
+            tabName,
+            btnText,
+            ruleForm,
+            rules,
+            tabClick,
+            submitForm,
+            getCode
+        };
     }
 };
 </script>
